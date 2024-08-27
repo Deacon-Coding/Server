@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.9'
 services:
  # Jellyfin
   jellyfin:
@@ -170,9 +170,29 @@ services:
     restart: unless-stopped
 
 #Bitwarden Services
-  mssql:
-    image: mssql
-    profiles: [mssql]
-  mail:
-    image: mail
-    profiles: [mail]
+  bitwarden:
+    depends_on:
+      - db
+    env_file:
+      - settings.env
+    image: bitwarden/self-host:beta
+    restart: always
+    ports:
+      - "80:8080"
+    volumes:
+      - bitwarden:/etc/bitwarden
+
+  db:
+    environment:
+      MARIADB_USER: "bitwarden"
+      MARIADB_PASSWORD: "super_strong_password"
+      MARIADB_DATABASE: "bitwarden_vault"
+      MARIADB_RANDOM_ROOT_PASSWORD: "true"
+    image: mariadb:10
+    restart: always
+    volumes:
+      - data:/var/lib/mysql
+
+volumes:
+  bitwarden:
+  data:

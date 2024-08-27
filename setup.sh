@@ -49,14 +49,3 @@ sudo docker run -d \
   -p 943:943 -p 443:443 -p 1194:1194/udp \
   -v ~/server/config:/openvpn \
   openvpn/openvpn-as
-
-# Bitwarden
-git clone https://github.com/bitwarden/server.git
-cd server
-git config blame.ignoreRevsFile .git-blame-ignore-revs
-git config --local core.hooksPath .git-hooks
-cd dev
-cp .env.example .env
-vim .env # set MSSQL_PASSWORD
-
-sudo reboot
