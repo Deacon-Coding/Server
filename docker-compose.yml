@@ -1,27 +1,5 @@
 version: '3.5'
 services:
-  pihole:
-  # More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
-    container_name: pihole
-    image: pihole/pihole:latest
-    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-    #  - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
-      - "80:80/tcp"
-    environment:
-      TZ: 'America/Pacific'
-      WEBPASSWORD: Shining-Gleaming2
-    # Volumes store your data between container upgrades
-    volumes:
-      - './etc-pihole:/etc/pihole'
-      - './etc-dnsmasq.d:/etc/dnsmasq.d'
-    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    #cap_add:
-      #- NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
-    restart: unless-stopped
-
  # Jellyfin
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
@@ -32,12 +10,12 @@ services:
       - TZ=Etc/UTC
       - JELLYFIN_PublishedServerUrl=192.168.0.5 #optional
     volumes:
-      - ~/server/jellyfin/config:/config:Z
-      - ~/server/jellyfin/cache:/cache:Z
-      - ~/server/media/movies:/movies:ro
-      - ~/server/media/books:/books:ro
-      - ~/server/media/music:/music:ro
-      - ~/server/media/tv:/tv:ro
+      - /home/user/server/jellyfin/config:/config:Z
+      - /home/user/server/jellyfin/cache:/cache:Z
+      - /home/user/server/media/movies:/movies:ro
+      - /home/user/server/media/books:/books:ro
+      - /home/user/server/media/music:/music:ro
+      - /home/user/server/media/tv:/tv:ro
     # Optional - may be necessary for docker healthcheck to pass if running in host network mode
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -58,7 +36,7 @@ services:
       - PGID=1000
       - TZ=America/Pacific
     volumes:
-      - ~/server/prowlarr/config:/config
+      - /home/user/server/prowlarr/config:/config
     restart: unless-stopped
 
   radarr: # Movies
@@ -69,9 +47,9 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - ~/server/radarr/config/data:/config
-      - ~/server/media/movies:/movies
-      - ~/Downloads:/downloads
+      - /home/user/server/radarr/config/data:/config
+      - /home/user/server/media/movies:/movies
+      - /home/user/Downloads:/downloads
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -86,9 +64,9 @@ services:
     ports:
       - 8989:8989
     volumes:
-      - ~/server/sonarr/config:/config
-      - ~/server/media/tv:/tv
-      - ~/Downloads:/downloads
+      - /home/user/server/sonarr/config:/config
+      - /home/user/server/media/tv:/tv
+      - /home/user/Downloads:/downloads
     restart: unless-stopped
 
   lidarr:  # Music
@@ -99,9 +77,9 @@ services:
       - PGID=1000
       - TZ=America/Pacific
     volumes:
-      - ~/server/lidarr/config:/config
-      - ~/server/media/music:/music
-      - ~/Downloads:/downloads
+      - /home/user/server/lidarr/config:/config
+      - /home/user/server/media/music:/music
+      - /home/user/Downloads:/downloads
     ports:
       - 8686:8686
     restart: unless-stopped
@@ -116,9 +94,9 @@ services:
       - PGID=1000
       - TZ=America/Pacific
     volumes:
-      - ~/server/readarr/config:/config
-      - ~/server/media/books:/books
-      - ~/Downloads:/downloads
+      - /home/user/server/readarr/config:/config
+      - /home/user/server/media/books:/books
+      - /home/user/Downloads:/downloads
     restart: unless-stopped
 
   bazarr: # Subtitles
@@ -129,10 +107,10 @@ services:
       - PGID=1000
       - TZ=America/Pacific
     volumes:
-      - ~/server/bazarr/config:/config
-      - ~/server/media/movies:/movies
-      - ~/server/media/tv:/tv
-      - ~/Downloads:/downloads
+      - /home/user/server/bazarr/config:/config
+      - /home/user/server/media/movies:/movies
+      - /home/user/server/media/tv:/tv
+      - /home/user/Downloads:/downloads
     ports:
       - 6767:6767
     restart: unless-stopped
@@ -149,8 +127,8 @@ services:
       - WEBUI_PORT=8080
       - TORRENTING_PORT=6881
     volumes:
-      - ~/server/qbittorrent/config:/config
-      - ~/Downloads:/downloads
+      - /home/user/server/qbittorrent/config:/config
+      - /home/user/Downloads:/downloads
     ports:
       - 8080:8080
       - 6881:6881
@@ -182,11 +160,19 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=America/Pacific
-      - NZBGET_USER=nzbget     #optional
-      - NZBGET_PASS=tegbzn6789 #optional
+#      - NZBGET_USER=nzbget     #optional
+#      - NZBGET_PASS=tegbzn6789 #optional
     volumes:
-      - ~/server/nzbget/config:/config
-      - ~/Downloads:/downloads
+      - /home/user/server/nzbget/config:/config
+      - /home/user/Downloads:/downloads
     ports:
       - 6789:6789
     restart: unless-stopped
+
+#Bitwarden Services
+  mssql:
+    image: mssql
+    profiles: [mssql]
+  mail:
+    image: mail
+    profiles: [mail]
